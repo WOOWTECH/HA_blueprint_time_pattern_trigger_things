@@ -1,0 +1,185 @@
+blueprint:
+  name: 時間模式觸發 Scene/Script（秒數版 / time_pattern 字串）
+  description: >
+    依「每 N 秒」間隔執行多個 Scene 與／或 Script，
+    支援全域條件、時段／星期條件，完成後可選擇推送持久通知 + notify.notify。
+  domain: automation
+  author: WOOW TECH CO., LTD.
+
+  # ─── Input ────────────────────────────────────────
+  input:
+    frequency_settings:
+      name: 執行頻率設定
+      icon: mdi:timer-outline
+      collapsed: true
+      input:
+        interval_seconds_pattern:
+          name: 間隔 - 秒數 (time_pattern 格式)
+          description: 例如 `/15` = 每 15 秒；`*` = 每秒；留空 = 停用
+          default: "/15"
+          selector:
+            text: {}
+
+    target_actions:
+      name: 執行目標
+      icon: mdi:play-circle-outline
+      collapsed: true
+      input:
+        target_scenes:
+          name: 要執行的 Scene (可複選)
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter: { domain: scene }
+
+        target_scripts:
+          name: 要執行的 Script (可複選)
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter: { domain: script }
+
+    global_conditions_settings:
+      name: 全域條件 (選填)
+      icon: mdi:earth
+      collapsed: true
+      input:
+        global_conditions:
+          name: 額外全域條件
+          default: []
+          selector:
+            condition: {}
+
+    time_condition_settings:
+      name: 時段／星期條件 (選填)
+      icon: mdi:clock-time-five-outline
+      collapsed: true
+      input:
+        after_time:
+          name: 開始時間
+          default: "00:00:00"
+          selector:
+            time: {}
+        before_time:
+          name: 結束時間
+          default: "23:59:59"
+          selector:
+            time: {}
+        weekdays:
+          name: 生效星期
+          default: [mon,tue,wed,thu,fri,sat,sun]
+          selector:
+            select:
+              multiple: true
+              mode: list
+              options:
+                - { label: 週一, value: mon }
+                - { label: 週二, value: tue }
+                - { label: 週三, value: wed }
+                - { label: 週四, value: thu }
+                - { label: 週五, value: fri }
+                - { label: 週六, value: sat }
+                - { label: 週日, value: sun }
+
+    notify_settings:
+      name: 通知設定 (選填)
+      icon: mdi:cellphone-message
+      collapsed: true
+      input:
+        send_notify:
+          name: 是否通知
+          default: n
+          selector:
+            select:
+              options:
+                - { label: 是, value: y }
+                - { label: 否, value: n }
+        notify_title:
+          name: 標題 (留空自動產生)
+          default: ""
+          selector:
+            text: {}
+        notify_message:
+          name: 內容 (留空自動產生，可寫 Jinja)
+          default: ""
+          selector:
+            text: {}
+
+# ─── Variables ─────────────────────────────────────
+variables:
+  _spat:   !input interval_seconds_pattern
+  _when:   "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+  _scenes: !input target_scenes
+  _scripts: !input target_scripts
+  _global: !input global_conditions
+  _after:  !input after_time
+  _before: !input before_time
+  _wday:   !input weekdays
+  _send:   !input send_notify
+  _title:  !input notify_title
+  _msg_in: !input notify_message
+
+# ─── Trigger ───────────────────────────────────────
+trigger:
+  - platform: time_pattern
+    # 直接使用使用者輸入的字串；若留空則不會觸發
+    seconds: !input interval_seconds_pattern
+
+# ─── Conditions ────────────────────────────────────
+condition:
+  - condition: template
+    value_template: >
+      {{ _global | length == 0 or (_global) }}
+  - condition: time
+    after: !input after_time
+    before: !input before_time
+    weekday: !input weekdays
+
+# ─── Actions ───────────────────────────────────────
+action:
+  # 0. 防呆：若未選 Scene / Script
+  - if:
+      - "{{ _scenes|length == 0 and _scripts|length == 0 }}"
+    then:
+      - service: persistent_notification.create
+        data:
+          title: "頻率觸發設定錯誤"
+          message: "未指定任何 Scene 或 Script，無法執行。"
+      - stop: ""
+
+  # 1. 執行 Scenes
+  - if: "{{ _scenes|length > 0 }}"
+    then:
+      - service: scene.turn_on
+        target: { entity_id: "{{ _scenes }}" }
+
+  # 2. 執行 Scripts
+  - if: "{{ _scripts|length > 0 }}"
+    then:
+      - service: script.turn_on
+        target: { entity_id: "{{ _scripts }}" }
+
+  # 3. 通知
+  - if: "{{ _send == 'y' }}"
+    then:
+      - variables:
+          _all: "{{ _scenes + _scripts }}"
+          _title_f: "{{ _title | default('頻率觸發執行完成', true) }}"
+          _msg: >
+            {% if _msg_in %}
+              {{ _msg_in }}
+            {% else %}
+              時間：{{ _when }}<br>
+              {% for e in _all %}
+                已執行「{{ state_attr(e,'friendly_name') or e }}」
+                (區域：{{ area_name(e) or '未設定' }}){% if not loop.last %}<br>{% endif %}
+              {% endfor %}
+            {% endif %}
+      - service: persistent_notification.create
+        data: { title: "{{ _title_f }}", message: "{{ _msg }}" }
+      - service: notify.notify
+        data: { title: "{{ _title_f }}", message: "{{ _msg }}" }
+
+mode: single
