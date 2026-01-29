@@ -1,0 +1,179 @@
+# 時間模式觸發 Scene/Script Blueprint
+
+依照設定的時間間隔（秒、分鐘、小時）自動執行 Scene 與 Script 的 Home Assistant 自動化藍圖。
+
+## 功能特色
+
+- **多種觸發頻率**：支援秒數、分鐘、小時三種時間模式
+- **混合實體選擇**：單一選擇器同時支援 Scene 和 Script
+- **全域條件**：可設定額外的觸發條件
+- **時段限制**：可限制只在特定時段和星期執行
+- **執行通知**：完成後可發送持久通知和 notify.notify
+
+## 版本說明
+
+### 簡易版 (`time_pattern_trigger_things_simple.yaml`)
+
+僅支援秒數間隔觸發，適合需要頻繁執行的場景。
+
+| 設定項目 | 說明 | 預設值 |
+|---------|------|--------|
+| 間隔秒數 | time_pattern 格式，如 `/15` = 每 15 秒 | `/15` |
+
+### 三合一版 (`time_pattern_trigger_things_complex.yaml`)
+
+同時支援秒數、分鐘、小時三種觸發頻率，任一條件達成即執行。
+
+| 設定項目 | 說明 | 預設值 |
+|---------|------|--------|
+| 間隔秒數 | time_pattern 格式，如 `/10` = 每 10 秒 | `/15` |
+| 間隔分鐘 | time_pattern 格式，如 `/5` = 每 5 分鐘 | `*` |
+| 間隔小時 | time_pattern 格式，如 `/2` = 每 2 小時 | `*` |
+
+> **注意**：使用 `*` 表示不使用該頻率。
+
+## time_pattern 格式說明
+
+| 格式 | 說明 | 範例 |
+|------|------|------|
+| `/N` | 每 N 單位觸發一次 | `/15` = 每 15 秒/分鐘/小時 |
+| `*` | 停用此觸發器 | 不觸發 |
+| `N` | 在第 N 單位觸發 | `30` = 在第 30 秒/分鐘 |
+
+## 系統需求
+
+- Home Assistant 2024.1 或更新版本
+- 已建立要執行的 Scene 或 Script
+
+## 安裝方式
+
+### 方式一：一鍵匯入（推薦）
+
+點擊下方按鈕直接匯入藍圖：
+
+**簡易版（秒數觸發）：**
+
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWOOWTECH%2FHA_blueprint_light_loop%2Fblob%2Fmain%2Ftime_pattern_trigger_things_simple.yaml)
+
+**三合一版（秒/分/時）：**
+
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWOOWTECH%2FHA_blueprint_light_loop%2Fblob%2Fmain%2Ftime_pattern_trigger_things_complex.yaml)
+
+### 方式二：手動匯入 URL
+
+1. 前往 **設定** > **自動化與場景** > **藍圖**
+2. 點擊右下角 **匯入藍圖**
+3. 貼上以下 URL：
+
+**簡易版：**
+```
+https://github.com/WOOWTECH/HA_blueprint_light_loop/blob/main/time_pattern_trigger_things_simple.yaml
+```
+
+**三合一版：**
+```
+https://github.com/WOOWTECH/HA_blueprint_light_loop/blob/main/time_pattern_trigger_things_complex.yaml
+```
+
+### 方式三：手動複製檔案
+
+1. 將藍圖檔案複製到 Home Assistant 的 `config/blueprints/automation/` 目錄
+2. 重新載入藍圖或重新啟動 Home Assistant
+
+```bash
+# 建立目錄
+mkdir -p /config/blueprints/automation/woowtech/
+
+# 複製檔案
+cp time_pattern_trigger_things_simple.yaml /config/blueprints/automation/woowtech/
+cp time_pattern_trigger_things_complex.yaml /config/blueprints/automation/woowtech/
+```
+
+## 設定說明
+
+### 執行頻率設定
+
+設定觸發的時間間隔，使用 time_pattern 格式。
+
+### 執行目標
+
+選擇要執行的 Scene 和/或 Script。支援多選，兩種類型可混合選擇。
+
+### 全域條件（選填）
+
+設定額外的觸發條件，例如：
+- 只在某個感測器為特定狀態時執行
+- 只在某個開關開啟時執行
+
+### 時段/星期條件（選填）
+
+限制自動化只在特定時段和星期執行：
+- **開始時間**：預設 00:00:00
+- **結束時間**：預設 23:59:59
+- **生效星期**：預設全部勾選
+
+### 通知設定（選填）
+
+執行完成後是否發送通知：
+- **是否通知**：是/否
+- **標題**：留空自動產生
+- **內容**：支援 Jinja 模板，留空自動產生
+
+## 使用範例
+
+### 範例一：每 30 秒檢查並執行場景
+
+使用簡易版，設定：
+- 間隔秒數：`/30`
+- 執行目標：選擇要執行的場景
+
+### 範例二：每 5 分鐘執行腳本
+
+使用三合一版，設定：
+- 間隔秒數：`*`（停用）
+- 間隔分鐘：`/5`
+- 間隔小時：`*`（停用）
+- 執行目標：選擇要執行的腳本
+
+### 範例三：每小時整點執行
+
+使用三合一版，設定：
+- 間隔秒數：`*`（停用）
+- 間隔分鐘：`*`（停用）
+- 間隔小時：`/1`
+- 執行目標：選擇要執行的場景和腳本
+
+## 常見問題
+
+### Q: 為什麼自動化沒有觸發？
+
+1. 檢查時段條件是否符合目前時間
+2. 檢查星期條件是否包含今天
+3. 檢查全域條件是否通過
+4. 確認 time_pattern 格式正確
+
+### Q: 可以同時執行多個 Scene 和 Script 嗎？
+
+可以。執行目標支援多選，會依序執行所有選擇的實體。
+
+### Q: 三合一版的多個觸發器會重複執行嗎？
+
+會。如果同時設定秒數和分鐘觸發，當兩者條件都滿足時（例如整點），可能會在短時間內連續觸發兩次。建議根據需求只啟用一種頻率。
+
+### Q: 如何停用某個觸發頻率？
+
+將該頻率設定為 `*` 即可停用。
+
+## 技術細節
+
+- 使用 `homeassistant.turn_on` 服務統一執行 Scene 和 Script
+- 支援 `condition` 選擇器的全域條件
+- 自動化模式：簡易版為 `single`，三合一版為 `restart`
+
+## 作者
+
+WOOW TECH CO., LTD.
+
+## 授權
+
+MIT License
