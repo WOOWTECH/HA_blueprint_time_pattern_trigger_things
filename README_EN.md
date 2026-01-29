@@ -47,19 +47,7 @@ Supports seconds, minutes, and hours triggers simultaneously. Executes when any 
 
 ## Installation
 
-### Method 1: One-Click Import (Recommended)
-
-Click the buttons below to import blueprints directly:
-
-**Simple Version (Seconds Trigger):**
-
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWOOWTECH%2FHA_blueprint_light_loop%2Fblob%2Fmain%2Ftime_pattern_trigger_things_simple.yaml)
-
-**Combined Version (Seconds/Minutes/Hours):**
-
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWOOWTECH%2FHA_blueprint_light_loop%2Fblob%2Fmain%2Ftime_pattern_trigger_things_complex.yaml)
-
-### Method 2: Manual URL Import
+### Method 1: Manual URL Import
 
 1. Go to **Settings** > **Automations & Scenes** > **Blueprints**
 2. Click **Import Blueprint** in the bottom right corner
@@ -67,27 +55,18 @@ Click the buttons below to import blueprints directly:
 
 **Simple Version:**
 ```
-https://github.com/WOOWTECH/HA_blueprint_light_loop/blob/main/time_pattern_trigger_things_simple.yaml
+https://github.com/WOOWTECH/HA_blueprint_time_pattern_trigger_things/blob/main/time_pattern_trigger_things_simple.yaml
 ```
 
 **Combined Version:**
 ```
-https://github.com/WOOWTECH/HA_blueprint_light_loop/blob/main/time_pattern_trigger_things_complex.yaml
+https://github.com/WOOWTECH/HA_blueprint_time_pattern_trigger_things/blob/main/time_pattern_trigger_things_complex.yaml
 ```
 
-### Method 3: Manual File Copy
+### Method 2: Manual File Copy
 
-1. Copy the blueprint files to Home Assistant's `config/blueprints/automation/` directory
+1. Copy the blueprint files to Home Assistant's `config/blueprints/automation/woowtech` directory
 2. Reload blueprints or restart Home Assistant
-
-```bash
-# Create directory
-mkdir -p /config/blueprints/automation/woowtech/
-
-# Copy files
-cp time_pattern_trigger_things_simple.yaml /config/blueprints/automation/woowtech/
-cp time_pattern_trigger_things_complex.yaml /config/blueprints/automation/woowtech/
-```
 
 ## Configuration
 
@@ -173,7 +152,3 @@ Set that frequency to `*` to disable it.
 ## Author
 
 WOOW TECH CO., LTD.
-
-## License
-
-MIT License

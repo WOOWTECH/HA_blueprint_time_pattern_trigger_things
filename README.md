@@ -47,19 +47,7 @@
 
 ## 安裝方式
 
-### 方式一：一鍵匯入（推薦）
-
-點擊下方按鈕直接匯入藍圖：
-
-**簡易版（秒數觸發）：**
-
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWOOWTECH%2FHA_blueprint_light_loop%2Fblob%2Fmain%2Ftime_pattern_trigger_things_simple.yaml)
-
-**三合一版（秒/分/時）：**
-
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWOOWTECH%2FHA_blueprint_light_loop%2Fblob%2Fmain%2Ftime_pattern_trigger_things_complex.yaml)
-
-### 方式二：手動匯入 URL
+### 方式一：手動匯入 URL
 
 1. 前往 **設定** > **自動化與場景** > **藍圖**
 2. 點擊右下角 **匯入藍圖**
@@ -67,27 +55,18 @@
 
 **簡易版：**
 ```
-https://github.com/WOOWTECH/HA_blueprint_light_loop/blob/main/time_pattern_trigger_things_simple.yaml
+https://github.com/WOOWTECH/HA_blueprint_time_pattern_trigger_things/blob/main/time_pattern_trigger_things_simple.yaml
 ```
 
 **三合一版：**
 ```
-https://github.com/WOOWTECH/HA_blueprint_light_loop/blob/main/time_pattern_trigger_things_complex.yaml
+https://github.com/WOOWTECH/HA_blueprint_time_pattern_trigger_things/blob/main/time_pattern_trigger_things_complex.yaml
 ```
 
-### 方式三：手動複製檔案
+### 方式二：手動複製檔案
 
-1. 將藍圖檔案複製到 Home Assistant 的 `config/blueprints/automation/` 目錄
+1. 將藍圖檔案複製到 Home Assistant 的 `config/blueprints/automation/woowtech` 目錄
 2. 重新載入藍圖或重新啟動 Home Assistant
-
-```bash
-# 建立目錄
-mkdir -p /config/blueprints/automation/woowtech/
-
-# 複製檔案
-cp time_pattern_trigger_things_simple.yaml /config/blueprints/automation/woowtech/
-cp time_pattern_trigger_things_complex.yaml /config/blueprints/automation/woowtech/
-```
 
 ## 設定說明
 
@@ -173,7 +152,3 @@ cp time_pattern_trigger_things_complex.yaml /config/blueprints/automation/woowte
 ## 作者
 
 WOOW TECH CO., LTD.
-
-## 授權
-
-MIT License
